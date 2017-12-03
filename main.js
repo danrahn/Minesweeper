@@ -1,6 +1,7 @@
 // JavaScript Document
 "use strict";
 
+/*global $*/
 // Anonymous function (can't be accessed from the console)
 (function() {
 	// Only do stuff once the main page is loaded
@@ -33,19 +34,22 @@
 		}
 	}
 	
-	function restart() {	
-		$('#gameboard').css('background-image', ''); // Clear background image
-		$('.box').css('opacity', '1');				 // Set opacity back to 1
-		$("#gameboard").html('');					 // Clear the boxes
-		clearInterval(timer);						 // Clear the timer
+	function restart() {
+		var gameBoard = $("#gameboard");
+        gameBoard.css('background-image', '');  // Clear background image
+		$('.box').css('opacity', '1');          // Set opacity back to 1
+        gameBoard.html('');                     // Clear the boxes
+		clearInterval(timer);                   // Clear the timer
 		pausedTime = 0;
 		started = false;							 
-		$('#time').html('0:00.000');					 // Set clock back to 0
-		$('#endGame').html('');						 // Clear any win/loss message
-		pausedState = '';							 // Remove any paused state from memory
-		$('#pause').attr('disabled', 'disabled')	 // Disable the pause button
-		$('#pause').html('Pause');					 // Reset the puase text
-		start();									 // Setup the new board
+		$('#time').html('0:00.000');            // Set clock back to 0
+		$('#endGame').html('');                 // Clear any win/loss message
+		pausedState = '';
+		// Remove any paused state from memory
+        var pause = $("#pause");
+        pause.attr('disabled', 'disabled');   // Disable the pause button
+        pause.html('Pause');                  // Reset the puase text
+		start();                                    // Setup the new board
 	}
 	
 	// Create the click event that will start the games
@@ -70,7 +74,7 @@
 	
 	function checkCookie() {
 		cookie = document.cookie;
-		if (cookie.length == 0) {
+		if (cookie.length === 0) {
 			var d = new Date();
 			d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
 			document.cookie = "scores='';expires=" + d.toUTCString();
@@ -82,8 +86,11 @@
 	function start() {
 		$('#scale').show();
 		// Get the values from the fields on the page
-		$('#error').hide();
+        var error = $("#error");
+        error.hide();
+        var gameBoard = $("#gameboard");
 		var message = '';
+		var i;
 		// If "advanced" setup chosen, use this
 		if (adv) {
 			WIDTH = parseInt($('#width').val());
@@ -104,12 +111,12 @@
 				|| WIDTH * HEIGHT > 10000 && BOMBS / (WIDTH * HEIGHT) < .15
 				|| WIDTH * HEIGHT > 15000 && BOMBS / (WIDTH * HEIGHT) < .2) {
 				message = 'Too large of a playing field for current mine density';
-			} 
+			}
 			if (message.length > 0) {
-				$('#error').fadeIn();
-				$('#gameboard').hide();
+                error.fadeIn();
+                gameBoard.hide();
 				$('#puased').hide();
-				$('#error').html(message);
+                error.html(message);
 				return;
 			}
 		// If standard options chosen, do this. Should probably
@@ -117,9 +124,10 @@
 		// html, causing the numbers to be invalid
 		} else {
 			WIDTH = parseInt($("#size").val());
-			HEIGHT = WIDTH;
-			var diff = $('#diff').val();
-			BOMBS = Math.round((WIDTH * HEIGHT * diff));
+            // noinspection JSSuspiciousNameCombination
+            HEIGHT = WIDTH;
+			var difficulty = $('#diff').val();
+			BOMBS = Math.round((WIDTH * HEIGHT * difficulty));
 		}
 		$('#stats').show();
 		$('#sizeAnnouncement').hide();
@@ -128,7 +136,7 @@
 		// be pretty much impossible. Formula should be tweaked
 		// though
 		var diff = BOMBS / (WIDTH * HEIGHT);
-		if (diff == .1) {
+		if (diff === .1) {
 			lives = 0;
 		} else if (diff <= .18) {
 			lives = 1;
@@ -144,15 +152,16 @@
 		} else if (WIDTH * HEIGHT >= 2000) {
 			lives += 1;
 		}
+
 		// Make the boxes smaller if a large size is used
 		if (WIDTH * HEIGHT > 4000 || WIDTH > 70 || HEIGHT > 70) {
 			DIMEN = 16;
-			$('#gameboard').css('font-size', '8pt');
+            gameBoard.css('font-size', '8pt');
 		} else if (WIDTH * HEIGHT > 2000 || WIDTH > 50 || HEIGHT > 50) {
-			$('#gameboard').css('font-size', '9pt');
+            gameBoard.css('font-size', '9pt');
 			DIMEN = 18;
 		} else if (WIDTH * HEIGHT > 1000 || WIDTH > 30 || HEIGHT > 30) {
-			$('#gameboard').css('font-size', '10pt');
+            gameBoard.css('font-size', '10pt');
 			DIMEN = 20;
 		} else if (WIDTH * HEIGHT > 400) {
 			DIMEN = 24;
@@ -163,7 +172,7 @@
 		$("#bCount").html(BOMBS + ' ');
 		$('#lives').html(lives);
 		// Set up game board css
-		$('#gameboard').css({"width" : ((WIDTH * DIMEN) + 'px'), 
+        gameBoard.css({"width" : ((WIDTH * DIMEN) + 'px'),
 							 "height" : ((HEIGHT * DIMEN) + 'px'),
 							 "position" : "relative",
 							 "margin" : "auto"});
@@ -172,7 +181,7 @@
 		bombs = [];
 		uncovered = [];
 		// Create the squares
-		for (var i = 0; i < HEIGHT; i++) {
+		for (i = 0; i < HEIGHT; i++) {
 			for (var j = 0; j < WIDTH; j++) {
 				var box = document.createElement('div');
 				// Unique ID
@@ -184,20 +193,20 @@
 				box.style.left = (DIMEN * j + 20) + 'px';
 				// Set line height to center text
 				box.style.lineHeight = (DIMEN - 2) + 'px';
-				$('#gameboard').append(box);
-				if (i == HEIGHT - 1 && j == WIDTH - 1) {
+                gameBoard.append(box);
+				if (i === HEIGHT - 1 && j === WIDTH - 1) {
 					// Fancy fade-in effect
 					// $('#gameboard').show();
-					$('#gameboard').css('opacity', 0).slideDown(1000).animate({opacity: 1}, {queue: false, duration: 1000});
+                    gameBoard.css('opacity', 0).slideDown(1000).animate({opacity: 1}, {queue: false, duration: 1000});
 				}
 			}
 		}
 		
-		var tempArray = new Array();
-		for (var i = 0; i < WIDTH * HEIGHT; i++) {
+		var tempArray = [];
+		for (i = 0; i < WIDTH * HEIGHT; i++) {
 			tempArray.push(i);
 		}
-		for (var i = 0; i < BOMBS; i++) {
+		for (i = 0; i < BOMBS; i++) {
 			var rand = Math.floor(Math.random() * tempArray.length);
 			bombs.push(tempArray[rand]);
 			tempArray.splice(rand, 1);
@@ -206,41 +215,42 @@
 		bombCount = [];
 		// Shitty if statements to determine how many nearby bombs there are
 		// The same basic formula is used a few more times
-		for (var i = 0; i < WIDTH * HEIGHT; i++) {
+		for (i = 0; i < WIDTH * HEIGHT; i++) {
 			var bomb = 0;
-			if (i % WIDTH != 0) {
-				if (bombs.indexOf(i - 1) != -1) { // Left
+			if (i % WIDTH !== 0) {
+				if (bombs.indexOf(i - 1) !== -1) { // Left
 					bomb++;
 				}
-				if (i > (WIDTH - 1) && bombs.indexOf(i - (WIDTH + 1)) != -1) { // Upper Left
+				if (i > (WIDTH - 1) && bombs.indexOf(i - (WIDTH + 1)) !== -1) { // Upper Left
 						bomb++;
 				}
-				if (i < (WIDTH * (HEIGHT - 1)) && bombs.indexOf(i + (WIDTH - 1)) != -1) { // Lower Left
+				if (i < (WIDTH * (HEIGHT - 1)) && bombs.indexOf(i + (WIDTH - 1)) !== -1) { // Lower Left
 						bomb++;
 				}
 			}
-			if (i > WIDTH - 1 && bombs.indexOf(i - WIDTH) != -1) { // Above
+			if (i > WIDTH - 1 && bombs.indexOf(i - WIDTH) !== -1) { // Above
 					bomb++;
 			}
-			if (i < WIDTH * (HEIGHT - 1) && bombs.indexOf(i + WIDTH) != -1) { // Below
+			if (i < WIDTH * (HEIGHT - 1) && bombs.indexOf(i + WIDTH) !== -1) { // Below
 					bomb++;
 			}
-			if ((i + 1) % WIDTH != 0) {
-				if (bombs.indexOf(i + 1) != -1) { // Right
+			if ((i + 1) % WIDTH !== 0) {
+				if (bombs.indexOf(i + 1) !== -1) { // Right
 					bomb++;
 				}
-				if (i > WIDTH - 1 && bombs.indexOf(i - (WIDTH - 1)) != -1) { // Upper Right
+				if (i > WIDTH - 1 && bombs.indexOf(i - (WIDTH - 1)) !== -1) { // Upper Right
 						bomb++;
 				}
-				if (i < (WIDTH * (HEIGHT - 1)) && bombs.indexOf(i + WIDTH + 1) != -1) { // Lower Right
+				if (i < (WIDTH * (HEIGHT - 1)) && bombs.indexOf(i + WIDTH + 1) !== -1) { // Lower Right
 						bomb++;
 				}
 			}
 			bombCount[i] = bomb;
 		}
 		// Set the width and height of each box, leaving room for the border
-		$('.box').width(DIMEN - 2);
-		$('.box').height(DIMEN - 2);
+        var boxes = $(".box");
+        boxes.width(DIMEN - 2);
+        boxes.height(DIMEN - 2);
 	}
 	
 	
@@ -251,8 +261,9 @@
 			$('.box').css({'width' : (DIMEN - 4) + 'px', 'height' : (DIMEN - 4) + 'px'});
 			DIMEN -= 2;
 			// Snrink the gameboard dimensions
-			$('#gameboard').css({'width' : parseInt($('#gameboard').css('width')) - (WIDTH * 2) + 'px',
-								 'height' : parseInt($('#gameboard').css('height')) - (HEIGHT * 2) + 'px'});
+            var gameBoard = $("#gameboard");
+			gameBoard.css({'width' : parseInt(gameBoard.css('width')) - (WIDTH * 2) + 'px',
+								 'height' : parseInt(gameBoard.css('height')) - (HEIGHT * 2) + 'px'});
 			// Set the new box dimensions for each box
 			resize();
 		}
@@ -263,8 +274,9 @@
 		if (DIMEN < 30) {
 			$('.box').css({'width' : (DIMEN) + 'px', 'height' : (DIMEN) + 'px'});
 			DIMEN += 2;
-			$('#gameboard').css({'width' : parseInt($('#gameboard').css('width')) + (WIDTH * 2) + 'px',
-								 'height' : parseInt($('#gameboard').css('height')) + (HEIGHT * 2) + 'px'});
+			var gameBoard = $("#gameboard");
+            gameBoard.css({'width' : parseInt(gameBoard.css('width')) + (WIDTH * 2) + 'px',
+								 'height' : parseInt(gameBoard.css('height')) + (HEIGHT * 2) + 'px'});
 			resize();
 		}
 		if (DIMEN >= 30) {
@@ -276,28 +288,28 @@
 		box.onclick = uncoverHelper;
 		box.oncontextmenu = addRightClick;
 		box.onmousedown = function(e) {
-			if (e.button == 2) {
+			if (e.button === 2) {
 				if (!$(this).hasClass('covered')) {
 					highlightSurrounding(this);
 				}
 			}
-		}
+		};
 		box.onmouseover = function(e) {
-			if (e.button == 2) {
+			if (e.button === 2) {
 				if (!$(this).hasClass('covered')) {
 					highlightSurrounding(this);
 				}
 			}
-		}
+		};
 		box.onmouseup = function(e) {
-			if (e.button == 2) {
+			if (e.button === 2) {
 				if (!$(this).hasClass('covered')) {
 					unhighlightSurrounding(this);
 				}
 			}
-		}
+		};
 		box.onmouseout = function(e) {
-			if (e.button == 2) {
+			if (e.button === 2) {
 				unhighlightSurrounding(this);
 			}
 		}
@@ -313,10 +325,11 @@
 	 */
 	function pause() {
 		$(this).attr('disabled', 'disabled');
-		if ($(this).html() == 'Pause') {
-			$(".box").each(function() { 
+		var box = $(".box");
+		if ($(this).html() === 'Pause') {
+            box.each(function() {
 				$(this).fadeOut(500, 'swing', function() { 
-					if (parseInt($(this).attr('id').substr(3)) == WIDTH * HEIGHT - 1) { 
+					if (parseInt($(this).attr('id').substr(3)) === WIDTH * HEIGHT - 1) { 
 						$('#gameboard').html('<div id="NiceTry">Paused</div>');
 						$('#pause').removeAttr('disabled');
 					}
@@ -331,11 +344,11 @@
 			pausedState = $('#gameboard').html();
 		} else {
 			$('#gameboard').html(pausedState);
-			$('.box').each(function() {
+            box.each(function() {
 				setupMouseListeners(this);
 				$(this).css('display', 'none');
 			});
-			$('.box').each(function() { $(this).fadeIn(500); });
+            box.each(function() { $(this).fadeIn(500); });
 			$(this).html('Pause');
 			$(this).removeAttr('disabled');
 			startTimer();
@@ -345,9 +358,10 @@
 	function resize() {
 		for (var i = 0; i < HEIGHT; i++) {
 			for (var j = 0; j < WIDTH; j++) {
-				$('#box' + (i * WIDTH + j)).css('top', (DIMEN * i + 20) + 'px');
-				$('#box' + (i * WIDTH + j)).css('left', (DIMEN * j + 20) + 'px');
-				$('#box' + (i * WIDTH + j)).css('line-height', (DIMEN - 2) + 'px');
+			    var box = $('#box' + (i * WIDTH + j));
+                box.css('top', (DIMEN * i + 20) + 'px');
+                box.css('left', (DIMEN * j + 20) + 'px');
+                box.css('line-height', (DIMEN - 2) + 'px');
 			}
 		}
 		if (DIMEN <= 17) {
@@ -367,18 +381,19 @@
 	// Pressing enter in any field will submit the data
 	function addKeyListeners() {
 		var fields = ['width', 'height', 'bmb', 'advsub', 
-					  'size', 'diff', 'sub']
-		for (var i = 0; i < 4; i++) {
+					  'size', 'diff', 'sub'];
+		var i;
+		for (i = 0; i < 4; i++) {
 			$('#' + fields[i]).keypress(function(e) {
-				if (e.which == 13) {
+				if (e.which === 13) {
 					adv = true;
 					clearBoard();
 				}
 			});
 		}
-		for (var i = 4; i < fields.length; i++) {
+		for (i = 4; i < fields.length; i++) {
 			$('#' + fields[i]).keypress(function(e) {
-				if (e.which == 13) {
+				if (e.which === 13) {
 					adv = false;
 					clearBoard();
 				}
@@ -411,11 +426,11 @@
 				minutes += '0';
 			}
 			// Manually add zeros if needed
-			if (elapsed % 1000 == 0) {
+			if (elapsed % 1000 === 0) {
 				$('#time').html(minutes + elapsed / 1000 + '000');
-			} else if (elapsed % 100 == 0) {
+			} else if (elapsed % 100 === 0) {
 				$('#time').html(minutes + elapsed / 1000 + '00');
-			} else if (elapsed % 10 == 0) {
+			} else if (elapsed % 10 === 0) {
 				$('#time').html(minutes + elapsed / 1000 + '0');
 			} else {
 				$('#time').html(minutes + elapsed / 1000);
@@ -425,11 +440,12 @@
 	
 	function addRightClick() {
 		var thisID = '#' + this.id;
+        var bCount = $("#bCount");
 		if ($(thisID).hasClass('covered')) {
 			if ($(thisID).hasClass('flag')) {
 				$(thisID).addClass('guess');
 				$(thisID).removeClass('flag');
-				$("#bCount").html((parseInt($("#bCount").html()) + 1) + ' ');
+                bCount.html((parseInt(bCount.html()) + 1) + ' ');
 				this.innerHTML = '<img src="guess.png" style="width:' + (DIMEN - 2) + 'px; height:' + (DIMEN - 2) + 'px;" />';
 				
 			} else if ($(thisID).hasClass('guess')) {
@@ -438,7 +454,7 @@
 			} else {
 				$(thisID).addClass('flag');
 				this.innerHTML = '<img src="flag.png" style="width:' + (DIMEN - 2) + 'px; height:' + (DIMEN - 2) + 'px;" />';
-				$("#bCount").html((parseInt($("#bCount").html()) - 1) + ' ');
+				bCount.html((parseInt(bCount.html()) - 1) + ' ');
 			}
 		}
 		return false;
@@ -458,7 +474,7 @@
 		// if the box isn't covered, check to see if there are
 		// the right number of flags surrounding it, otherwise
 		// do a standard uncover
-		if (this.className.indexOf('covered') == -1) {
+		if (this.className.indexOf('covered') === -1) {
 			checkFlags(boxID);
 		} else {
 			uncover(boxID);
@@ -466,74 +482,102 @@
 	}
 	
 	function unhighlightSurrounding(box) {
-		var place = parseInt(box.id.substr(3));		
-		if (place % WIDTH != 0) {
-			if ($('#box' + (place - 1)).hasClass('covered')) {
-				$('#box' + (place - 1)).css('background-color', '');
+		var place = parseInt(box.id.substr(3));	
+		var borderBox;
+		if (place % WIDTH !== 0) {
+		    borderBox = $('#box' + (place - 1));
+			if (borderBox.hasClass('covered')) {
+				borderBox.css('background-color', '');
 			}
-			if ($('#box' + (place - (WIDTH + 1))).hasClass('covered')) {
-				$('#box' + (place - (WIDTH + 1))).css('background-color', '');
+			
+			borderBox = $('#box' + (place - (WIDTH + 1)));
+			if (borderBox.hasClass('covered')) {
+				borderBox.css('background-color', '');
 			}
-			if ($('#box' + (place + WIDTH - 1)).hasClass('covered')) {
-				$('#box' + (place + WIDTH - 1)).css('background-color', '');
+			
+			borderBox = $('#box' + (place + WIDTH - 1));
+			if (borderBox.hasClass('covered')) {
+				borderBox.css('background-color', '');
 			}
 		}
 		if (place > WIDTH - 1) {
-			if ($('#box' + (place - WIDTH)).hasClass('covered')) {
-				$('#box' + (place - WIDTH)).css('background-color', '');
+		    borderBox = $('#box' + (place - WIDTH));
+			if (borderBox.hasClass('covered')) {
+				borderBox.css('background-color', '');
 			}
 		}
 		if (place < WIDTH * (HEIGHT - 1)) {
-			if ($('#box' + (place + WIDTH)).hasClass('covered')) {
-				$('#box' + (place + WIDTH)).css('background-color', '');
+		    borderBox = $('#box' + (place + WIDTH));
+			if (borderBox.hasClass('covered')) {
+				borderBox.css('background-color', '');
 			}
 		}
-		if ((place + 1) % WIDTH != 0) {
-			if ($('#box' + (place + 1)).hasClass('covered')) {
-				$('#box' + (place + 1)).css('background-color', '');
+		if ((place + 1) % WIDTH !== 0) {
+		    borderBox = $('#box' + (place + 1));
+			if (borderBox.hasClass('covered')) {
+				borderBox.css('background-color', '');
 			}
-			if ($('#box' + (place - (WIDTH - 1))).hasClass('covered')) {
-				$('#box' + (place - (WIDTH - 1))).css('background-color', '');
+			
+			borderBox = $('#box' + (place - (WIDTH - 1)));
+			if (borderBox.hasClass('covered')) {
+				borderBox.css('background-color', '');
 			}
-			if ($('#box' + (place + WIDTH + 1)).hasClass('covered')) {
-				$('#box' + (place + WIDTH + 1)).css('background-color', '');
+			
+			borderBox = $('#box' + (place + WIDTH + 1));
+			if (borderBox.hasClass('covered')) {
+				borderBox.css('background-color', '');
 			}
 		}
 	}
 	
 	// When an uncovered box is right clicked, highlight the surrounding uncovered boxes
 	function highlightSurrounding(box) {
-		var place = parseInt(box.id.substr(3));		
-		if (place % WIDTH != 0) {
-			if ($('#box' + (place - 1)).hasClass('covered') && !$('#box' + (place - 1)).hasClass('flag')) {
-				$('#box' + (place - 1)).css('background-color', '#DDD');
+		var place = parseInt(box.id.substr(3));
+		var borderBox;
+		if (place % WIDTH !== 0) {
+		    borderBox = $('#box' + (place - 1));
+			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
+				borderBox.css('background-color', '#DDD');
 			}
-			if ($('#box' + (place - (WIDTH + 1))).hasClass('covered') && !$('#box' + (place - (WIDTH + 1))).hasClass('flag')) {
-				$('#box' + (place - (WIDTH + 1))).css('background-color', '#DDD');
+			
+			borderBox = $('#box' + (place - (WIDTH + 1)));
+			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
+				borderBox.css('background-color', '#DDD');
 			}
-			if ($('#box' + (place + WIDTH - 1)).hasClass('covered') && !$('#box' + (place + WIDTH - 1)).hasClass('flag')) {
-				$('#box' + (place + WIDTH - 1)).css('background-color', '#DDD');
+			
+			borderBox = $('#box' + (place + WIDTH - 1));
+			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
+				borderBox.css('background-color', '#DDD');
 			}
 		}
+		
 		if (place > WIDTH - 1) {
-			if ($('#box' + (place - WIDTH)).hasClass('covered') && !$('#box' + (place - WIDTH)).hasClass('flag')) {
-				$('#box' + (place - WIDTH)).css('background-color', '#DDD');
+		    borderBox = $('#box' + (place - WIDTH));
+			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
+				borderBox.css('background-color', '#DDD');
 			}
 		}
+		
 		if (place < WIDTH * (HEIGHT - 1)) {
-			if ($('#box' + (place + WIDTH)).hasClass('covered') && !$('#box' + (place + WIDTH)).hasClass('flag')) {
-				$('#box' + (place + WIDTH)).css('background-color', '#DDD');
+		    borderBox = $('#box' + (place + WIDTH));
+			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
+				borderBox.css('background-color', '#DDD');
 			}
 		}
-		if ((place + 1) % WIDTH != 0) {
-			if ($('#box' + (place + 1)).hasClass('covered') && !$('#box' + (place + 1)).hasClass('flag')) {
-				$('#box' + (place + 1)).css('background-color', '#DDD');
+		if ((place + 1) % WIDTH !== 0) {
+		    borderBox = $('#box' + (place + 1));
+			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
+				borderBox.css('background-color', '#DDD');
 			}
-			if ($('#box' + (place - (WIDTH - 1))).hasClass('covered') && !$('#box' + (place - (WIDTH - 1))).hasClass('flag')) {
-				$('#box' + (place - (WIDTH - 1))).css('background-color', '#DDD');
+			
+			borderBox = $('#box' + (place - (WIDTH - 1)));
+			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
+				borderBox.css('background-color', '#DDD');
 			}
-			if ($('#box' + (place + WIDTH + 1)).hasClass('covered') && !$('#box' + (place + WIDTH + 1)).hasClass('flag')) {
-				$('#box' + (place + WIDTH + 1)).css('background-color', '#DDD');
+			
+			borderBox = $('#box' + (place + WIDTH + 1));
+			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
+				borderBox.css('background-color', '#DDD');
 			}
 		}	
 	}
@@ -555,8 +599,9 @@
 					  box + (place - (WIDTH - 1)),
 					  box + (place + WIDTH + 1)];
 		var flagCount = 0;
-		if (place % WIDTH != 0) {
-			for (var i = 0; i < 3; i++) {
+		var i;
+		if (place % WIDTH !== 0) {
+			for (i = 0; i < 3; i++) {
 				if ($(places[i]).hasClass('flag')) {
 					flagCount++;
 				}
@@ -572,8 +617,8 @@
 				flagCount++;
 			}
 		}
-		if ((place + 1) % WIDTH != 0) {
-			for (var i = 5; i < 8; i++) {
+		if ((place + 1) % WIDTH !== 0) {
+			for (i = 5; i < 8; i++) {
 				if ($(places[i]).hasClass('flag')) {
 					flagCount++;
 				}
@@ -581,33 +626,33 @@
 		}
 		// If the flags surrounding the clicked box equals the bomb count,
 		// uncover if not already uncovered
-		if (flagCount == bombCount[place] && bombs.indexOf(place) == -1) {
+		if (flagCount === bombCount[place] && bombs.indexOf(place) === -1) {
 			uncover(place);
-			if (place % WIDTH != 0) {
-				if (uncovered.indexOf(place - 1) == -1) {
+			if (place % WIDTH !== 0) {
+				if (uncovered.indexOf(place - 1) === -1) {
 					uncover(place - 1);
 				}
-				if (place > WIDTH - 1 && uncovered.indexOf(place - (WIDTH + 1)) == -1) {
+				if (place > WIDTH - 1 && uncovered.indexOf(place - (WIDTH + 1)) === -1) {
 					uncover(place - (WIDTH + 1));
 				}
-				if (place < WIDTH * (HEIGHT - 1) && uncovered.indexOf(place + WIDTH - 1) == -1) {
+				if (place < WIDTH * (HEIGHT - 1) && uncovered.indexOf(place + WIDTH - 1) === -1) {
 					uncover(place + WIDTH - 1);
 				}
 			}
-			if (place > WIDTH - 1 && uncovered.indexOf(place - WIDTH) == -1) {
+			if (place > WIDTH - 1 && uncovered.indexOf(place - WIDTH) === -1) {
 				uncover(place - WIDTH);
 			}
-			if (place < WIDTH * (HEIGHT - 1) && uncovered.indexOf(place + WIDTH) == -1) {
+			if (place < WIDTH * (HEIGHT - 1) && uncovered.indexOf(place + WIDTH) === -1) {
 				uncover(place + WIDTH);
 			}
-			if ((place + 1) % WIDTH != 0) {
-				if (uncovered.indexOf(place + 1) == -1) {
+			if ((place + 1) % WIDTH !== 0) {
+				if (uncovered.indexOf(place + 1) === -1) {
 					uncover(place + 1);
 				}
-				if (place > WIDTH - 1 && uncovered.indexOf(place - (WIDTH - 1)) == -1) {
+				if (place > WIDTH - 1 && uncovered.indexOf(place - (WIDTH - 1)) === -1) {
 					uncover(place - (WIDTH - 1));
 				}
-				if (place < WIDTH * (HEIGHT - 1) && uncovered.indexOf(place + (WIDTH + 1)) == -1) {
+				if (place < WIDTH * (HEIGHT - 1) && uncovered.indexOf(place + (WIDTH + 1)) === -1) {
 					uncover(place + (WIDTH + 1));
 				}
 			}
@@ -618,64 +663,67 @@
 	// uncover all surrounding boxes
 	function uncover(place) {
 		// Don't uncover if flagged
-		if (!$('#box' + place).hasClass('flag') && !$('#box' + place).hasClass('guess')) {
-			$('#box' + place).addClass('c' + bombCount[place]);
-			if (uncovered.indexOf(place) == -1) {
+        var box = $('#box' + place);
+		if (!box.hasClass('flag') && !box.hasClass('guess')) {
+			box.addClass('c' + bombCount[place]);
+			if (uncovered.indexOf(place) === -1) {
 				uncovered.push(place);
 			}
-			$('#box' + place).removeClass('covered');
+			box.removeClass('covered');
 			// Place the number of surrounding bombs in the box, unless
 			// there aren't any
-			if (bombCount[place] != 0) {
-				$('#box' + place).html(bombCount[place]);
+			if (bombCount[place] !== 0) {
+				box.html(bombCount[place]);
 			}
 			// Uncover if there is at least
 			// one life left or there is not bomb
-			if (bombs.indexOf(place) == -1 || lives != 0) {
+			if (bombs.indexOf(place) === -1 || lives !== 0) {
 				// If there is a bomb there, get rid of a life, and
 				// permanantly flag the box
-				if (bombs.indexOf(place) != -1) {
-					$('#lives').html(parseInt($('#lives').html()) - 1);
+				if (bombs.indexOf(place) !== -1) {
+				    var liveDiv = $("#lives");
+                    liveDiv.html(parseInt(liveDiv.html()) - 1);
 					lives--;
-					$('#box' + place).removeClass('covered');
-					$('#box' + place).html('<img src="bomb.png" style="width:' + (DIMEN - 2) + 'px; height:' + (DIMEN - 2) + 'px;" />');
-					$('#box' + place).addClass('bomb');
+					box.removeClass('covered');
+					box.html('<img src="bomb.png" style="width:' + (DIMEN - 2) + 'px; height:' + (DIMEN - 2) + 'px;" />');
+					box.addClass('bomb');
 					// Display the flag after one second
 					setTimeout(function() {
-						$('#box' + place).addClass('flag');
-						$('#box' + place).removeClass('bomb');
+						box.addClass('flag');
+						box.removeClass('bomb');
 						uncovered.splice(uncovered.indexOf(place));
-						$("#bCount").html(parseInt($("#bCount").html() - 1) + ' ');
-						$('#box' + place).html('<img src="flag.png" style="width:' + (DIMEN - 2) + 'px; height:' + (DIMEN - 2) + 'px;" />');
+						var bCount = $("#bCount");
+                        bCount.html(parseInt(bCount.html() - 1) + ' ');
+						box.html('<img src="flag.png" style="width:' + (DIMEN - 2) + 'px; height:' + (DIMEN - 2) + 'px;" />');
 					}, 1000);
 				} else {
 					// Uncover surrounding if there are no bombs next to the clicked square
-					if (bombCount[place] == 0) {
-						if (place % WIDTH != 0) {
-							if (uncovered.indexOf(place - 1) == -1) {
+					if (bombCount[place] === 0) {
+						if (place % WIDTH !== 0) {
+							if (uncovered.indexOf(place - 1) === -1) {
 								uncover(place - 1);
 							}
-							if (place > WIDTH - 1 && uncovered.indexOf(place - (WIDTH + 1)) == -1) {
+							if (place > WIDTH - 1 && uncovered.indexOf(place - (WIDTH + 1)) === -1) {
 								uncover(place - (WIDTH + 1));
 							}
-							if (place < WIDTH * (HEIGHT - 1) && uncovered.indexOf(place + WIDTH - 1) == -1) {
+							if (place < WIDTH * (HEIGHT - 1) && uncovered.indexOf(place + WIDTH - 1) === -1) {
 								uncover(place + WIDTH - 1);
 							}
 						}
-						if (place > WIDTH - 1 && uncovered.indexOf(place - WIDTH) == -1) {
+						if (place > WIDTH - 1 && uncovered.indexOf(place - WIDTH) === -1) {
 							uncover(place - WIDTH);
 						}
-						if (place < WIDTH * (HEIGHT - 1) && uncovered.indexOf(place + WIDTH) == -1) {
+						if (place < WIDTH * (HEIGHT - 1) && uncovered.indexOf(place + WIDTH) === -1) {
 							uncover(place + WIDTH);
 						}
-						if ((place + 1) % WIDTH != 0) {
-							if (uncovered.indexOf(place + 1) == -1) {
+						if ((place + 1) % WIDTH !== 0) {
+							if (uncovered.indexOf(place + 1) === -1) {
 								uncover(place + 1);
 							}
-							if (place > WIDTH - 1 && uncovered.indexOf(place - (WIDTH - 1)) == -1) {
+							if (place > WIDTH - 1 && uncovered.indexOf(place - (WIDTH - 1)) === -1) {
 								uncover(place - (WIDTH - 1));
 							}
-							if (place < WIDTH * (HEIGHT - 1) && uncovered.indexOf(place + (WIDTH + 1)) == -1) {
+							if (place < WIDTH * (HEIGHT - 1) && uncovered.indexOf(place + (WIDTH + 1)) === -1) {
 								uncover(place + (WIDTH + 1));
 							}
 						}
@@ -685,14 +733,15 @@
 			} else {	
 				clearInterval(timer);
 				for (var i = 0; i < WIDTH * HEIGHT; i++) {
-					$('#box' + i).removeClass('covered');
-					if (bombs.indexOf(i) != -1) {
-						$('#box' + i).html('<img src="bomb.png" style="width:' + (DIMEN - 2) + 'px; height:' + (DIMEN - 2) + 'px;" />');
-						$('#box' + i).addClass('bomb');
+				    box = $('#box' + i);
+					box.removeClass('covered');
+					if (bombs.indexOf(i) !== -1) {
+						box.html('<img src="bomb.png" style="width:' + (DIMEN - 2) + 'px; height:' + (DIMEN - 2) + 'px;" />');
+						box.addClass('bomb');
 					} else {
-						$('#box' + i).addClass('c' + bombCount[i]);
-						if (bombCount[i] != 0) {
-							$('#box' + i).html(bombCount[i]);
+						box.addClass('c' + bombCount[i]);
+						if (bombCount[i] !== 0) {
+							box.html(bombCount[i]);
 						}
 					}
 				}
@@ -701,7 +750,7 @@
 			}
 		}
 		// VICTORY. Smiley Face background, stop timer
-		if (uncovered.length + bombs.length == WIDTH * HEIGHT) {
+		if (uncovered.length + bombs.length === WIDTH * HEIGHT) {
 			$('#gameboard').css({'background-image' : 'url(smile.png)', 'background-size' : 'contain', 'background-repeat' : 'no-repeat', 'background-position' : 'center'});
 			$('.box').css('opacity', '.5');
 			$('#pause').attr('disabled', 'disabled');

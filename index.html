@@ -4,8 +4,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Minesweeper?</title>
 <link href="main.css" type="text/css" rel="stylesheet" />
-<script src="jquery-2.1.1.min.js"></script>
-<script src="main.js"></script>
+<script src="jquery-2.1.1.min.js" type="text/javascript"></script>
+<script src="main.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -24,15 +24,15 @@
         <!-- Change the size/difficulty of the puzzle -->
         <div id="controls">
         <p>
-        	Size: 
-        	<select id="size">
+            <label for="size">Size: </label>
+            <select id="size">
             	<option value="10">10 x 10</option>
                 <option value="15">15 x 15</option>
                 <option value="20">20 x 20</option>
                 <option value="25">25 x 25</option>
                 <option value="30">30 x 30</option>
             </select>
-            Difficulty: 
+            <label for="diff">Difficulty: </label>
             <select id="diff">
             	<option value=".1">Very Easy</option>
                 <option value=".15" selected="selected">Easy</option>
@@ -47,7 +47,9 @@
         	- - - - - OR - - - - -
         </p>
         <p>
-        	Width: <input type="text" id="width" size="1" /> Height: <input type="text" id="height" size="1" /> Bombs: <input type="text" id="bmb" size="2" />
+        	<label for="width">Width: </label><input type="text" id="width" size="1" />
+            <label for="height">Height: </label><input type="text" id="height" size="1" />
+            <label for="bmb">Bombs: </label><input type="text" id="bmb" size="2" />
             <button id="advSub">Go!</button>
         </div>
     </div>
