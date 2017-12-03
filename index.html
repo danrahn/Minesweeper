@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Minesweeper?</title>
+<link href="main.css" type="text/css" rel="stylesheet" />
+<script src="jquery-2.1.1.min.js"></script>
+<script src="main.js"></script>
+</head>
+
+<body>
+    <div id="main">
+        <h1>Welcome to Minesweeper!</h1>
+        <h2 id="sizeAnnouncement">Select a size to begin</h2>
+        <h2 id="error"></h2>
+        <div id="stats">
+        	<p>
+            	Bombs: <span id="bCount"></span> | Time: <span id="time">0:00.000</span> | Lives Left: <span id="lives"></span>
+            </p>
+        </div>
+        <div id="scale"><button id="zIn">Zoom In</button><button id="zOut">Zoom Out</button><button id="pause" disabled="disabled">Pause</button></div>
+        <div id="gameboard"></div>
+        <h2 id="endGame"></h2>
+        <!-- Change the size/difficulty of the puzzle -->
+        <div id="controls">
+        <p>
+        	Size: 
+        	<select id="size">
+            	<option value="10">10 x 10</option>
+                <option value="15">15 x 15</option>
+                <option value="20">20 x 20</option>
+                <option value="25">25 x 25</option>
+                <option value="30">30 x 30</option>
+            </select>
+            Difficulty: 
+            <select id="diff">
+            	<option value=".1">Very Easy</option>
+                <option value=".15" selected="selected">Easy</option>
+                <option value=".18">Medium</option>
+                <option value=".21">Hard</option>
+                <option value=".25">Very Hard</option>
+                <option value=".33">Death Wish</option>
+            </select>
+            <button id="sub">Go!</button>
+        </p>
+        <p>
+        	- - - - - OR - - - - -
+        </p>
+        <p>
+        	Width: <input type="text" id="width" size="1" /> Height: <input type="text" id="height" size="1" /> Bombs: <input type="text" id="bmb" size="2" />
+            <button id="advSub">Go!</button>
+        </div>
+    </div>
+</body>
+</html>
