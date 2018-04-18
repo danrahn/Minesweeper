@@ -6,7 +6,7 @@
 (function() {
 	// Only do stuff once the main page is loaded
 	window.onload = setup;
-	
+
 	// variables needed throughout the program
 	var bombCount;
 	var bombs;
@@ -23,7 +23,7 @@
 	var pausedState;
 	var firstRun = true;
 	var cookie;
-	
+
 	// Reset the board when someone presses "Go!"
 	function clearBoard() {
 		if (!firstRun) {
@@ -33,7 +33,7 @@
 			restart();
 		}
 	}
-	
+
 	function restart() {
 		var gameBoard = $("#gameboard");
         gameBoard.css('background-image', '');  // Clear background image
@@ -41,7 +41,7 @@
         gameBoard.html('');                     // Clear the boxes
 		clearInterval(timer);                   // Clear the timer
 		pausedTime = 0;
-		started = false;							 
+		started = false;
 		$('#time').html('0:00.000');            // Set clock back to 0
 		$('#endGame').html('');                 // Clear any win/loss message
 		pausedState = '';
@@ -51,27 +51,27 @@
         pause.html('Pause');                  // Reset the puase text
 		start();                                    // Setup the new board
 	}
-	
+
 	// Create the click event that will start the games
 	function setup() {
 		$('#scale').hide();
 		$('#gameboard').hide();
 		$('#stats').hide();
 		$('#error').hide();
-		
+
 		// If zoom-out is clicked, zoom out if possible
 		$('#zOut').click(zoomOut);
-		
+
 		// If the zoom-in button is clicked, zoom in if possible
 		$('#zIn').click(zoomIn);
-		
+
 		// Save the state of the game and pause
 		$('#pause').click(pause);
-		
+
 		addKeyListeners();
 		checkCookie();
 	}
-	
+
 	function checkCookie() {
 		cookie = document.cookie;
 		if (cookie.length === 0) {
@@ -81,7 +81,7 @@
 		}
 		console.log(document.cookie);
 	}
-	
+
 	// Set up the board
 	function start() {
 		$('#scale').show();
@@ -131,7 +131,7 @@
 		}
 		$('#stats').show();
 		$('#sizeAnnouncement').hide();
-		
+
 		// Set a number of lives, since at times a game can
 		// be pretty much impossible. Formula should be tweaked
 		// though
@@ -176,7 +176,7 @@
 							 "height" : ((HEIGHT * DIMEN) + 'px'),
 							 "position" : "relative",
 							 "margin" : "auto"});
-							 
+
 		// Create arrays for bomb locations, and uncovered squares
 		bombs = [];
 		uncovered = [];
@@ -201,7 +201,7 @@
 				}
 			}
 		}
-		
+
 		var tempArray = [];
 		for (i = 0; i < WIDTH * HEIGHT; i++) {
 			tempArray.push(i);
@@ -211,7 +211,7 @@
 			bombs.push(tempArray[rand]);
 			tempArray.splice(rand, 1);
 		}
-		
+
 		bombCount = [];
 		// Shitty if statements to determine how many nearby bombs there are
 		// The same basic formula is used a few more times
@@ -252,9 +252,9 @@
         boxes.width(DIMEN - 2);
         boxes.height(DIMEN - 2);
 	}
-	
-	
-	
+
+
+
 	function zoomOut() {
 		$('#zIn').removeAttr('disabled');
 		if (DIMEN > 15) {
@@ -268,7 +268,7 @@
 			resize();
 		}
 	}
-	
+
 	function zoomIn() {
 		$('#zOut').removeAttr('disabled');
 		if (DIMEN < 30) {
@@ -283,7 +283,7 @@
 			$('#zIn').attr('disabled', 'disabled');
 		}
 	}
-	
+
 	function setupMouseListeners(box) {
 		box.onclick = uncoverHelper;
 		box.oncontextmenu = addRightClick;
@@ -314,9 +314,9 @@
 			}
 		}
 	}
-		
+
 	/*
-	 * Puase turned out to be a bit trickier than I initially thought. When puase is clicked, 
+	 * Puase turned out to be a bit trickier than I initially thought. When puase is clicked,
 	 * each box fades out, but the boxes should not remain in the html, as a user could potentially
 	 * just recreate the square by looking at the source, completing the board while the game is still
 	 * paused. To combat this, the entire html of the gameboard is saved in a string, then reattached.
@@ -325,15 +325,14 @@
 	 */
 	function pause() {
 		$(this).attr('disabled', 'disabled');
-		var box = $(".box");
 		if ($(this).html() === 'Pause') {
-            box.each(function() {
-				$(this).fadeOut(500, 'swing', function() { 
-					if (parseInt($(this).attr('id').substr(3)) === WIDTH * HEIGHT - 1) { 
+            $(".box").each(function() {
+				$(this).fadeOut(500, 'swing', function() {
+					if (parseInt($(this).attr('id').substr(3)) === WIDTH * HEIGHT - 1) {
 						$('#gameboard').html('<div id="NiceTry">Paused</div>');
 						$('#pause').removeAttr('disabled');
 					}
-				}); 
+				});
 			});
 			$(this).html('Unpause');
 			var time = $('#time').html();
@@ -344,7 +343,7 @@
 			pausedState = $('#gameboard').html();
 		} else {
 			$('#gameboard').html(pausedState);
-            box.each(function() {
+			$(".box").each(function() {
 				setupMouseListeners(this);
 				$(this).css('display', 'none');
 			});
@@ -354,7 +353,7 @@
 			startTimer();
 		}
 	}
-	
+
 	function resize() {
 		for (var i = 0; i < HEIGHT; i++) {
 			for (var j = 0; j < WIDTH; j++) {
@@ -377,10 +376,10 @@
 			$('#gameboard').css('font-size', '12pt');
 		}
 	}
-	
+
 	// Pressing enter in any field will submit the data
 	function addKeyListeners() {
-		var fields = ['width', 'height', 'bmb', 'advsub', 
+		var fields = ['width', 'height', 'bmb', 'advsub',
 					  'size', 'diff', 'sub'];
 		var i;
 		for (i = 0; i < 4; i++) {
@@ -406,9 +405,9 @@
 		$("#advSub").click(function() {
 			adv = true;
 			clearBoard();
-		});	
+		});
 	}
-	
+
 	function startTimer() {
 		var d = new Date();
 		var time = d.getTime();
@@ -437,7 +436,7 @@
 			}
 		}, 1);
 	}
-	
+
 	function addRightClick() {
 		var thisID = '#' + this.id;
         var bCount = $("#bCount");
@@ -447,7 +446,7 @@
 				$(thisID).removeClass('flag');
                 bCount.html((parseInt(bCount.html()) + 1) + ' ');
 				this.innerHTML = '<img src="guess.png" style="width:' + (DIMEN - 2) + 'px; height:' + (DIMEN - 2) + 'px;" />';
-				
+
 			} else if ($(thisID).hasClass('guess')) {
 				$(thisID).removeClass('guess');
 				$(thisID).html('');
@@ -459,7 +458,7 @@
 		}
 		return false;
 	}
-	
+
 	// Sometimes uncover() needs a parameter, other times it doesn't. This handles
 	// the case where there is no paramter (when a user directly clicks on a covered square).
 	function uncoverHelper() {
@@ -480,21 +479,21 @@
 			uncover(boxID);
 		}
 	}
-	
+
 	function unhighlightSurrounding(box) {
-		var place = parseInt(box.id.substr(3));	
+		var place = parseInt(box.id.substr(3));
 		var borderBox;
 		if (place % WIDTH !== 0) {
 		    borderBox = $('#box' + (place - 1));
 			if (borderBox.hasClass('covered')) {
 				borderBox.css('background-color', '');
 			}
-			
+
 			borderBox = $('#box' + (place - (WIDTH + 1)));
 			if (borderBox.hasClass('covered')) {
 				borderBox.css('background-color', '');
 			}
-			
+
 			borderBox = $('#box' + (place + WIDTH - 1));
 			if (borderBox.hasClass('covered')) {
 				borderBox.css('background-color', '');
@@ -517,19 +516,19 @@
 			if (borderBox.hasClass('covered')) {
 				borderBox.css('background-color', '');
 			}
-			
+
 			borderBox = $('#box' + (place - (WIDTH - 1)));
 			if (borderBox.hasClass('covered')) {
 				borderBox.css('background-color', '');
 			}
-			
+
 			borderBox = $('#box' + (place + WIDTH + 1));
 			if (borderBox.hasClass('covered')) {
 				borderBox.css('background-color', '');
 			}
 		}
 	}
-	
+
 	// When an uncovered box is right clicked, highlight the surrounding uncovered boxes
 	function highlightSurrounding(box) {
 		var place = parseInt(box.id.substr(3));
@@ -539,25 +538,25 @@
 			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
 				borderBox.css('background-color', '#DDD');
 			}
-			
+
 			borderBox = $('#box' + (place - (WIDTH + 1)));
 			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
 				borderBox.css('background-color', '#DDD');
 			}
-			
+
 			borderBox = $('#box' + (place + WIDTH - 1));
 			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
 				borderBox.css('background-color', '#DDD');
 			}
 		}
-		
+
 		if (place > WIDTH - 1) {
 		    borderBox = $('#box' + (place - WIDTH));
 			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
 				borderBox.css('background-color', '#DDD');
 			}
 		}
-		
+
 		if (place < WIDTH * (HEIGHT - 1)) {
 		    borderBox = $('#box' + (place + WIDTH));
 			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
@@ -569,19 +568,19 @@
 			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
 				borderBox.css('background-color', '#DDD');
 			}
-			
+
 			borderBox = $('#box' + (place - (WIDTH - 1)));
 			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
 				borderBox.css('background-color', '#DDD');
 			}
-			
+
 			borderBox = $('#box' + (place + WIDTH + 1));
 			if (borderBox.hasClass('covered') && !borderBox.hasClass('flag')) {
 				borderBox.css('background-color', '#DDD');
 			}
-		}	
+		}
 	}
-	
+
 	// If the box clicked has been uncovered, check to see
 	// if the number of flags surrounding the box is equal to the
 	// number of bombs. If it is, uncover all surrounding boxes that
@@ -658,8 +657,8 @@
 			}
 		}
 	}
-	
-	// Uncover the given box, and if there are no surrounding bombs, 
+
+	// Uncover the given box, and if there are no surrounding bombs,
 	// uncover all surrounding boxes
 	function uncover(place) {
 		// Don't uncover if flagged
@@ -730,7 +729,7 @@
 					}
 				}
 			// LOSS. End timer, reveal all squares
-			} else {	
+			} else {
 				clearInterval(timer);
 				for (var i = 0; i < WIDTH * HEIGHT; i++) {
 				    box = $('#box' + i);
@@ -756,6 +755,6 @@
 			$('#pause').attr('disabled', 'disabled');
 			clearInterval(timer);
 			$('#endGame').html('You Win! You swept the board in ' + $('#time').html());
-		} 
+		}
 	}
 })();
